@@ -4,9 +4,8 @@ import nodemailer from 'nodemailer';
 
 
 const createReferral = async (req, res) => {
+    const { name, email, message } = req.body.details;
 
-    const { name, email, message } = req.body;
-    console.log(name, email, message)
     const prisma = new PrismaClient();
 
     // Validate input
@@ -19,6 +18,8 @@ const createReferral = async (req, res) => {
         const referral = await prisma.Referral.create({
             data: { name, email, message }
         });
+
+        sendReferralEmail(name, email, message)
 
         return res.status(201).json(referral);
     } catch (error) {
