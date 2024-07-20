@@ -1,12 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import nodemailer from 'nodemailer';
 
-
+const prisma = new PrismaClient();
 
 const createReferral = async (req, res) => {
     const { name, email, message } = req.body.details;
-
-    const prisma = new PrismaClient();
 
     // Validate input
     if (!name || !email || !message) {
@@ -15,11 +13,11 @@ const createReferral = async (req, res) => {
 
     try {
         // Save referral to the database
-        const referral = await prisma.Referral.create({
+        const referral = await prisma.referral.create({
             data: { name, email, message }
         });
 
-        sendReferralEmail(name, email, message)
+        await sendReferralEmail(name, email, message);
 
         return res.status(201).json(referral);
     } catch (error) {
@@ -47,7 +45,5 @@ const sendReferralEmail = async (name, email, message) => {
 
     await transporter.sendMail(mailOptions);
 };
-
-
 
 export { createReferral };
